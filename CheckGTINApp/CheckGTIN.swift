@@ -26,21 +26,9 @@ func checkGTIN(_ gtin: String) -> Bool {
     guard gtinDigitsArray.count == gtin.count else { return false }
 
     // at this point `gtin` has been successfully converted to digits
-    
-                            //    let multipliers = [3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3]
-                            //
-                            //    guard let checkDigit = gtinDigitsArray.popLast() else { return false }
-                            //
-                            //    // iterate over rest of array "back to front"
-                            //    gtinDigitsArray = gtinDigitsArray.reversed()
-                            //
-                            //    var checkSum = 0
-                            //    for (index, value) in gtinDigitsArray.enumerated() {
-                            //        let multiplier = multipliers[index]
-                            //        checkSum += multiplier * value
-                            //    }
-    // need to compare last digit to (checkSum subtracted from next highest muliple of 10)
     let (checkSum, checkDigit) = getCheckSumAndDigitForDigitsArray(gtinDigitsArray)
+
+    // need to compare last digit to (checkSum subtracted from next highest muliple of 10)
     let checkSumDigit = 10 - checkSum % 10
 
     return (checkSumDigit == checkDigit)
@@ -58,6 +46,7 @@ func getCheckSumAndDigitForDigitsArray(_ gtinDigitsArray: [Int]) -> (checkSum: I
 
     return (checkSum, checkDigit)
 }
+
 func getCheckSumAndDigitForValidGTIN(_ gtin: String) -> (checkSum: Int, checkDigit: Int ) {
     let validLengths = [14, 13, 12, 8]
     guard validLengths.contains(gtin.count) else { return (0, 0) }
@@ -77,6 +66,7 @@ func getCheckSumAndDigitForValidGTIN(_ gtin: String) -> (checkSum: Int, checkDig
 
     return getCheckSumAndDigitForDigitsArray(gtinDigitsArray)
 }
+
 func getCheckSumAndDigitForAnyGTIN(_ gtin: String) -> (checkSum: Int, checkDigit: Int ) {
     // convert [Char] to [Int]
     let gtinDigitsArray = Array(gtin).compactMap { Int(String($0)) }
