@@ -80,12 +80,12 @@
                                     <action selector="tapValidateButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="jCh-wm-r1F"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LPf-Cs-EyX">
-                                <rect key="frame" x="20" y="301" width="374" height="92"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="LPf-Cs-EyX">
+                                <rect key="frame" x="20" y="301" width="374" height="44"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="92" id="zvv-ZB-FIu"/>
+                                    <constraint firstAttribute="height" constant="44" id="zvv-ZB-FIu"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -107,6 +107,15 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="i4E-dG-8fo">
+                                <rect key="frame" x="20" y="353" width="374" height="28"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="28" id="1wv-Xy-kMh"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
@@ -121,16 +130,19 @@
                             <constraint firstItem="LGA-70-yud" firstAttribute="leading" secondItem="Cel-D6-PET" secondAttribute="trailing" constant="14" id="EVa-Vg-MMT"/>
                             <constraint firstItem="AoR-qL-Cpb" firstAttribute="leading" secondItem="GYO-Ez-64a" secondAttribute="trailing" constant="8" id="FH3-5j-UEU"/>
                             <constraint firstItem="e1k-67-jBZ" firstAttribute="leading" secondItem="cMt-Md-mgC" secondAttribute="trailing" constant="8" id="L2L-TA-o0w"/>
+                            <constraint firstItem="i4E-dG-8fo" firstAttribute="trailing" secondItem="LPf-Cs-EyX" secondAttribute="trailing" id="QeR-sx-XdK"/>
                             <constraint firstItem="AoR-qL-Cpb" firstAttribute="height" secondItem="GYO-Ez-64a" secondAttribute="height" id="X4m-zI-bMa"/>
                             <constraint firstItem="Cel-D6-PET" firstAttribute="width" secondItem="GYO-Ez-64a" secondAttribute="width" multiplier="0.93617" id="axH-Pr-CfZ"/>
                             <constraint firstItem="Cel-D6-PET" firstAttribute="top" secondItem="GYO-Ez-64a" secondAttribute="bottom" constant="15" id="dbG-yl-DbI"/>
                             <constraint firstItem="LGA-70-yud" firstAttribute="leading" secondItem="Cel-D6-PET" secondAttribute="trailing" constant="14" id="e4m-dt-C2z"/>
+                            <constraint firstItem="i4E-dG-8fo" firstAttribute="leading" secondItem="LPf-Cs-EyX" secondAttribute="leading" id="epp-vH-zWf"/>
                             <constraint firstItem="Cel-D6-PET" firstAttribute="leading" secondItem="GYO-Ez-64a" secondAttribute="leading" id="ev8-zS-WhR"/>
                             <constraint firstItem="cMt-Md-mgC" firstAttribute="leading" secondItem="Cel-D6-PET" secondAttribute="leading" id="fd7-qc-m4J"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="LPf-Cs-EyX" secondAttribute="trailing" constant="20" id="fe9-Ep-E8U"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="AoR-qL-Cpb" secondAttribute="trailing" constant="20" id="hXD-bL-41f"/>
                             <constraint firstItem="BkT-Vx-ZzQ" firstAttribute="leading" secondItem="e1k-67-jBZ" secondAttribute="leading" id="huN-KZ-5P2"/>
                             <constraint firstItem="cMt-Md-mgC" firstAttribute="top" secondItem="Cel-D6-PET" secondAttribute="bottom" constant="15" id="mUP-aw-Dzc"/>
+                            <constraint firstItem="i4E-dG-8fo" firstAttribute="top" secondItem="LPf-Cs-EyX" secondAttribute="bottom" constant="8" id="pCw-Z0-heB"/>
                             <constraint firstItem="LGA-70-yud" firstAttribute="centerY" secondItem="Cel-D6-PET" secondAttribute="centerY" id="uJK-JR-p0H"/>
                             <constraint firstItem="GYO-Ez-64a" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="xSj-4M-OSd"/>
                             <constraint firstItem="cMt-Md-mgC" firstAttribute="centerY" secondItem="e1k-67-jBZ" secondAttribute="centerY" id="xaM-wR-nTr"/>
@@ -142,6 +154,7 @@
                         <outlet property="calculationLabel" destination="LPf-Cs-EyX" id="Kkf-0q-Kki"/>
                         <outlet property="checkDigitLabel" destination="e1k-67-jBZ" id="Rel-zo-USk"/>
                         <outlet property="checkSumLabel" destination="LGA-70-yud" id="L3S-0m-dF4"/>
+                        <outlet property="explanationLabel" destination="i4E-dG-8fo" id="Z6e-Eq-f4e"/>
                         <outlet property="gtinTextField" destination="AoR-qL-Cpb" id="oYu-Mg-z3P"/>
                         <outlet property="validateButton" destination="BkT-Vx-ZzQ" id="aGn-eZ-VON"/>
                     </connections>

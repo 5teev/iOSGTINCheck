@@ -19,6 +19,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var checkSumLabel: UILabel!
     @IBOutlet weak var validateButton: UIButton!
     @IBOutlet weak var calculationLabel: UILabel!
+    @IBOutlet weak var explanationLabel: UILabel!
 
     let validGTINs = [
         "76308722791248", // valid GTIN-14
@@ -78,11 +79,10 @@ class ViewController: UIViewController {
         checkSumLabel.textColor = valid ? validColor : invalidColor
     }
     func updateCalculationLabel(checkSum: Int, checkDigit: Int, valid: Bool) {
-        var text = "\(checkSum) + \(checkDigit) = \(checkSum + checkDigit)    "
-        text += valid ? "✓⃝" : "✘"
-        text += valid ? "\nChecksum plus check digit is a multiple of 10" : "\nChecksum plus check digit isn't a multiple of 10"
-        calculationLabel.text = text
+        calculationLabel.text = "\(checkSum) + \(checkDigit) = \(checkSum + checkDigit)    \(valid ? "✓⃝" : "✘")"
         calculationLabel.textColor = valid ? validColor : invalidColor
+        explanationLabel.text = valid ? "Checksum plus check digit is a multiple of 10" : "Checksum plus check digit isn't a multiple of 10"
+        explanationLabel.textColor = valid ? validColor : invalidColor
     }
 }
 
