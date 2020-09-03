@@ -61,27 +61,34 @@ class ViewController: UIViewController {
         }
     }
     @IBAction func tapValidateButton(_ sender: UIButton) {
-        let gtin = gtinTextField.text
-        let valid: Bool = gtin?.isValidGTIN() ?? false
+        let gtin: String = gtinTextField.text ?? "00000000"
+        let valid: Bool = gtin.isValidGTIN()
         gtinTextField.textColor = valid ? validColor : invalidColor
         if valid {
-            let (checkSum, checkDigit) = getCheckSumAndDigitForValidGTIN(gtin!)
+            let (checkSum, checkDigit) = getCheckSumAndDigitForValidGTIN(gtin)
             checkDigitLabel.text = String(checkDigit)
             checkSumLabel.text = String(checkSum)
-            updateCalculationLabel(checkSum: checkSum, checkDigit: checkDigit, valid: true)
+            updateCalculationLabel(gtin: gtin, checkSum: checkSum, checkDigit: checkDigit, valid: true)
         } else {
-            let (checkSum, checkDigit) = getCheckSumAndDigitForAnyGTIN(gtin!)
+            let (checkSum, checkDigit) = getCheckSumAndDigitForAnyGTIN(gtin)
             checkDigitLabel.text = String(checkDigit)
             checkSumLabel.text = String(checkSum)
-            updateCalculationLabel(checkSum: checkSum, checkDigit: checkDigit, valid: false)
+            updateCalculationLabel(gtin: gtin, checkSum: checkSum, checkDigit: checkDigit, valid: false)
         }
         checkDigitLabel.textColor = valid ? validColor : invalidColor
         checkSumLabel.textColor = valid ? validColor : invalidColor
     }
-    func updateCalculationLabel(checkSum: Int, checkDigit: Int, valid: Bool) {
+
+    func updateCalculationLabel(gtin: String, checkSum: Int, checkDigit: Int, valid: Bool) {
         calculationLabel.text = "\(checkSum) + \(checkDigit) = \(checkSum + checkDigit)    \(valid ? "✓⃝" : "✘")"
         calculationLabel.textColor = valid ? validColor : invalidColor
-        explanationLabel.text = valid ? "Checksum plus check digit is a multiple of 10" : "Checksum plus check digit isn't a multiple of 10"
+        if lengthIsValid(for: gtin), valid {
+            explanationLabel.text = "Checksum plus check digit is a multiple of 10"
+        } else if !lengthIsValid(for: gtin) {
+            explanationLabel.text = "GTIN has the wrong length"
+        } else { // not valid
+            explanationLabel.text = "Checksum plus check digit isn't a multiple of 10"
+        }
         explanationLabel.textColor = valid ? validColor : invalidColor
     }
 }
@@ -127,4 +134,61 @@ extension ViewController: UITableViewDelegate {
         gtinTextField.text = text
         gtinTextField.textColor = .black
     }
+
+    func getCheckSumAndDigitForValidGTIN(_ gtin: String) -> (checkSum: Int, checkDigit: Int ) {
+        let validLengths = [14, 13, 12, 8]
+        guard validLengths.contains(gtin.count) else { return (0, 0) }
+
+        // make sure GTIN string has only integers
+        let validChars = Array("0123456789")
+        let containsOnlyIntegers = gtin.allSatisfy { (char) -> Bool in
+            validChars.contains(char)
+        }
+        if !containsOnlyIntegers { return (0, 0) }
+
+        // convert [Char] to [Int]
+        let gtinDigitsArray = Array(gtin).compactMap { Int(String($0)) }
+
+        // make sure we get all digits from the string
+        guard gtinDigitsArray.count == gtin.count else { return (0, 0) }
+
+        return getCheckSumAndDigitForDigitsArray(gtinDigitsArray)
+    }
+
+    func getCheckSumAndDigitForAnyGTIN(_ gtin: String) -> (checkSum: Int, checkDigit: Int ) {
+        // convert [Char] to [Int]
+        let gtinDigitsArray = Array(gtin).compactMap { Int(String($0)) }
+        return getCheckSumAndDigitForDigitsArray(gtinDigitsArray)
+    }
+
+    // testing
+    func testValidGTINs() {
+        let validGTINs = [
+            "76308722791248", // valid GTIN-14
+            "7630872279124", // valid GTIN-13
+            "763087227912", // valid GTIN-12
+            "76308727" // valid GTIN-8
+        ]
+        validGTINs.forEach { gtin in
+            assert(checkGTIN(gtin)) // test function
+            assert(gtin.isValidGTIN()) // test String extension
+        }
+    }
+
+    func testInvalidGTINs() {
+        let invalidGTINs = [
+            "76308722791247", // GTIN-14 with wrong check key
+            "7630872279123", // GTIN-13 with wrong check key
+            "763087227911", // GTIN-12 with wrong check key
+            "76308726", // GTIN-8 with wrong check key
+            "0", // wrong length
+            "abcdabcd", // right length, no integers
+            "9876543a" // right length, not all integers
+        ]
+        invalidGTINs.forEach { gtin in
+            assert(!checkGTIN(gtin)) // test function
+            assert(!gtin.isValidGTIN()) // test String extension
+        }
+    }
 }
+
