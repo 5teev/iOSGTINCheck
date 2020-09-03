@@ -9,18 +9,13 @@ extension String {
 
 func checkGTIN(_ gtin: String) -> Bool {
     // make sure gtin has a valid length
-    let validLengths = [14, 13, 12, 8]
-    guard validLengths.contains(gtin.count) else { return false }
+    guard lengthIsValid(for: gtin) else { return false }
 
     // make sure GTIN string has only integers
-    let validChars = Array("0123456789")
-    let containsOnlyIntegers = gtin.allSatisfy { (char) -> Bool in
-        validChars.contains(char)
-    }
-    if !containsOnlyIntegers { return false }
+    guard onlyIntegers(in: gtin) else { return false }
 
     // convert [Char] to [Int]
-    let gtinDigitsArray = Array(gtin).compactMap { Int(String($0)) }
+    let gtinDigitsArray = integerArray(from: gtin)
 
     // make sure we get all digits from the string
     guard gtinDigitsArray.count == gtin.count else { return false }
@@ -28,77 +23,66 @@ func checkGTIN(_ gtin: String) -> Bool {
     // at this point `gtin` has been successfully converted to digits
     let (checkSum, checkDigit) = getCheckSumAndDigitForDigitsArray(gtinDigitsArray)
 
-    // need to compare last digit to (checkSum subtracted from next highest muliple of 10)
-    let checkSumDigit = 10 - checkSum % 10
-
-    return (checkSumDigit == checkDigit)
+    // checkSum + checkDigit should be a multiple of 10
+    let validationSum = (checkSum + checkDigit)
+    let validationSumMod10 =  validationSum % 10 // should be 0
+    let isValid = (validationSumMod10 == 0)
+    return isValid
 }
 
-func getCheckSumAndDigitForDigitsArray(_ gtinDigitsArray: [Int]) -> (checkSum: Int, checkDigit: Int ) {
-    let multipliers = [3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3]
-    var gtinDigits = gtinDigitsArray
-    guard let checkDigit = gtinDigits.popLast() else { return (0, 0) }
-    
-    // iterate over rest of array "back to front"
-    gtinDigits = gtinDigits.reversed()
-
-    let checkSum = zip(multipliers, gtinDigits).map(*).reduce(0, +)
-
-    return (checkSum, checkDigit)
-}
-
-func getCheckSumAndDigitForValidGTIN(_ gtin: String) -> (checkSum: Int, checkDigit: Int ) {
+func lengthIsValid(for gtin: String) -> Bool {
     let validLengths = [14, 13, 12, 8]
-    guard validLengths.contains(gtin.count) else { return (0, 0) }
+    return validLengths.contains(gtin.count)
+}
 
-    // make sure GTIN string has only integers
+func onlyIntegers(in gtin: String) -> Bool {
     let validChars = Array("0123456789")
     let containsOnlyIntegers = gtin.allSatisfy { (char) -> Bool in
         validChars.contains(char)
     }
-    if !containsOnlyIntegers { return (0, 0) }
-
-    // convert [Char] to [Int]
-    let gtinDigitsArray = Array(gtin).compactMap { Int(String($0)) }
-
-    // make sure we get all digits from the string
-    guard gtinDigitsArray.count == gtin.count else { return (0, 0) }
-
-    return getCheckSumAndDigitForDigitsArray(gtinDigitsArray)
+    return containsOnlyIntegers
 }
 
-func getCheckSumAndDigitForAnyGTIN(_ gtin: String) -> (checkSum: Int, checkDigit: Int ) {
-    // convert [Char] to [Int]
-    let gtinDigitsArray = Array(gtin).compactMap { Int(String($0)) }
-    return getCheckSumAndDigitForDigitsArray(gtinDigitsArray)
+func integerArray(from gtin: String) -> [Int] {
+    let stringArray = Array(gtin)
+    return stringArray.compactMap { Int(String($0)) }
 }
 
-// testing
-func testValidGTINs() {
-    let validGTINs = [
-        "76308722791248", // valid GTIN-14
-        "7630872279124", // valid GTIN-13
-        "763087227912", // valid GTIN-12
-        "76308727" // valid GTIN-8
-    ]
-    validGTINs.forEach { gtin in
-        assert(checkGTIN(gtin)) // test function
-        assert(gtin.isValidGTIN()) // test String extension
-    }
+
+
+
+func getCheckSumAndDigitForDigitsArray(_ gtinDigitsArray: [Int]) -> (checkSum: Int, checkDigit: Int ) {
+    // the rules for this algorithm are as follows:
+    // the last digit is a "check digit" to be reserved until the end, so pull it from the array immediately
+    // the rest of the digits should be multiplied by 3 or 1, alternating, starting from the new final digit
+    // and working back to the first digit
+    // e.g., "91827364" will reserve "4" as the check digit, then sum
+    // 6 * 3 + 3 * 1 + 7 * 3 + 2 * 1 + 8 * 3 + 1 * 1 + 9 * 3
+    // We reverse each array so we can work back to front in this way.
+    // We also use zip() to create a combination of two arrays with the same count as the shorter array,
+    // so we don't have to worry about keeping track of the index as we iterate over multipliers;
+    // unused factors are simply discarded.
+    
+    // The factors defined by the validation algorithm:
+    var multipliers = [3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3]
+
+    // make a variable of the array so...
+    var gtinDigits = gtinDigitsArray
+    // ...we can pop the last item from it, and work with the remainder
+    guard let checkDigit = gtinDigits.popLast() else { return (0, 0) }
+    
+    // we will iterate over this remaining array "back to front"
+    gtinDigits = gtinDigits.reversed()
+
+    // reversing this array is formally correct, but meaningless, as the array is symmetric
+    multipliers = multipliers.reversed()
+
+    // use zip() to pair up GTIN digits with corresponding factors,
+    // multiply the digits and their factors using .map(*),
+    // and finally add up the array using .reduce(0, +) (i.e., add each product to 0)
+    let checkSum = zip(multipliers, gtinDigits).map(*).reduce(0, +)
+
+    // return the checkSum and the checkDigit obtained earlier
+    return (checkSum, checkDigit)
 }
 
-func testInvalidGTINs() {
-    let invalidGTINs = [
-        "76308722791247", // GTIN-14 with wrong check key
-        "7630872279123", // GTIN-13 with wrong check key
-        "763087227911", // GTIN-12 with wrong check key
-        "76308726", // GTIN-8 with wrong check key
-        "0", // wrong length
-        "abcdabcd", // right length, no integers
-        "9876543a" // right length, not all integers
-    ]
-    invalidGTINs.forEach { gtin in
-        assert(!checkGTIN(gtin)) // test function
-        assert(!gtin.isValidGTIN()) // test String extension
-    }
-}
